@@ -1,33 +1,35 @@
+import allure
 from selenium.webdriver.common.by import By
+from base_page import BasePage  # Импортируем базовый класс
 
-class MainPage:
+class MainPage(BasePage):
     ORDER_BUTTON = (By.XPATH, "//button[text()='Заказать']")
     LOGO_SCOOTER = (By.XPATH, "//a[@href='/']")
     LOGO_YANDEX = (By.XPATH, "//a[contains(@href, 'zen.yandex.ru')]")
-
-    # Локаторы для вопросов и ответов
+    
     QUESTION_LOCATORS = {
         0: (By.XPATH, "//div[text()='Как заказать самокат?']"),
         1: (By.XPATH, "//div[text()='Когда привезут самокат?']"),
         2: (By.XPATH, "//div[text()='Как отменить заказ?']")
     }
-
+    
     ANSWER_LOCATORS = {
-        0: (By.XPATH, "//div[contains(@class, 'accordion__panel')][1]"),  # Первый ответ
-        1: (By.XPATH, "//div[contains(@class, 'accordion__panel')][2]"),  # Второй ответ
-        2: (By.XPATH, "//div[contains(@class, 'accordion__panel')][3]")   # Третий ответ
+        0: (By.XPATH, "//div[contains(@class, 'accordion__panel')][1]"),
+        1: (By.XPATH, "//div[contains(@class, 'accordion__panel')][2]"),
+        2: (By.XPATH, "//div[contains(@class, 'accordion__panel')][3]")
     }
 
     def __init__(self, driver):
-        self.driver = driver
+        super().__init__(driver)  # Инициализируем базовый класс
 
+    @allure.step("Нажимаем кнопку 'Заказать'")
     def click_order_button(self):
-        self.driver.find_element(*self.ORDER_BUTTON).click()
+        self.click(*self.ORDER_BUTTON)
 
+    @allure.step("Кликаем по вопросу FAQ с индексом {index}")
     def click_faq_question(self, index):
-        self.driver.find_element(*self.QUESTION_LOCATORS[index]).click()
+        self.click(*self.QUESTION_LOCATORS[index])
 
+    @allure.step("Получаем текст ответа для вопроса с индексом {index}")
     def get_faq_answer_text(self, index):
-        # Дожидаемся появления текста ответа
-        self.driver.implicitly_wait(2)  # Можно использовать явное ожидание
-        return self.driver.find_element(*self.ANSWER_LOCATORS[index]).text
+        return self.get_text(*self.ANSWER_LOCATORS[index])
